@@ -1,0 +1,80 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "vconcat": [
+    {
+      "data": { "url": "data/Production_World_and_continent.csv" },
+      "transform": [
+        { "calculate": "toNumber(datum.Year)", "as": "YearNum" },
+        { "filter": "datum.YearNum >= 1976 && datum.YearNum <= 2024" },
+        {
+          "filter": "indexof(['Asia','Africa','North America','South America','Europe'], datum.Entity) >= 0"
+        },
+        { "filter": { "param": "brush" } } 
+      ],
+      "width": 480,
+      "height": 240,
+      "mark": "area",
+      "encoding": {
+        "x": {
+          "field": "YearNum",
+          "type": "quantitative",
+          "axis": { "title": "Year (1976–2024)", "format": "d" }
+        },
+        "y": {
+          "aggregate": "sum",
+          "field": "Oil production (TWh)",
+          "type": "quantitative",
+          "axis": { "title": "Oil production (TWh)" }
+        },
+        "color": { "field": "Entity", "type": "nominal", "legend": { "title": "Entity" } }
+      }
+    },
+
+    {
+      "data": { "url": "data/Oil Prices.csv" },
+      "transform": [
+        { "calculate": "toNumber(datum.Year)", "as": "YearNum" }
+      ],
+      "width": 480,
+      "height": 240,
+      "mark": "area",
+      "encoding": {
+        "x": {
+          "field": "YearNum",
+          "type": "quantitative",
+          "scale": { "domain": { "param": "brush" } },
+          "axis": { "title": "Year", "format": "d" }
+        },
+        "y": {
+          "field": "Oil Price (USD)",
+          "type": "quantitative",
+          "axis": { "title": "Oil Price (USD)" }
+        }
+      }
+    },
+
+    {
+      "data": { "url": "data/Oil Prices.csv" },
+      "transform": [
+        { "calculate": "toNumber(datum.Year)", "as": "YearNum" }
+      ],
+      "width": 480,
+      "height": 60,
+      "mark": "area",
+      "params": [
+        {
+          "name": "brush",
+          "select": { "type": "interval", "encodings": ["x"] }
+        }
+      ],
+      "encoding": {
+        "x": { "field": "YearNum", "type": "quantitative", "axis": { "format": "d" } },
+        "y": {
+          "field": "Oil Price (USD)",
+          "type": "quantitative",
+          "axis": { "tickCount": 3, "grid": false }
+        }
+      }
+    }
+  ]
+}
