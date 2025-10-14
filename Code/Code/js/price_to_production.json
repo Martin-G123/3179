@@ -1,0 +1,51 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Scatter plot of Oil Price vs. Production, joined by Year.",
+  
+  "data": {
+    "url": "https://raw.githubusercontent.com/Martin-G123/3179/refs/heads/main/Code/data/oil_production_filtered.csv" 
+  },
+  
+  "transform": [
+    {
+      "lookup": "Year",
+      "from": {
+        "data": {
+          "url": "https://raw.githubusercontent.com/Martin-G123/3179/refs/heads/main/Code/data/Oil%20Prices.csv" 
+        },
+        "key": "year",
+        "fields": ["Oil Price (USD)"]
+      },
+      "as": ["Oil Price (USD)"]
+    },
+    
+    {"filter": "datum['Oil Price (USD)'] != null"},
+    
+    {"filter": "datum['Oil production (TWh)'] > 0"}
+  ],
+  
+  "mark": "point",
+  "encoding": {
+    "x": {
+      "field": "Oil production (TWh)", 
+      "type": "quantitative", 
+      "title": "Oil Production (TWh)"
+    },
+    "y": {
+      "field": "Oil Price (USD)", 
+      "type": "quantitative", 
+      "title": "Oil Price (USD)"
+    },
+    "color": {
+      "field": "Entity", 
+      "type": "nominal", 
+      "legend": {"title": "Country/Entity"}
+    },
+    "tooltip": [
+      {"field": "Entity", "title": "Country"},
+      {"field": "Year", "type": "quantitative"},
+      {"field": "Oil production (TWh)", "type": "quantitative"},
+      {"field": "Oil Price (USD)", "type": "quantitative", "format": "$.2f"}
+    ]
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+  "description": "A scatterplot showing horsepower and miles per gallons for various cars.",
+  "data": {"url": "https://raw.githubusercontent.com/Martin-G123/3179/refs/heads/main/Code/data/oil_consumption_filtered.csv"},
+  "mark": "point",
+  "encoding": {
+    "x": {"field": "Year", "type": "quantitative"},
+    "y": {"field": "Oil production (TWh)", "type": "quantitative"}
+  }
+}
