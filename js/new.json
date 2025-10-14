@@ -1,0 +1,55 @@
+{
+    "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+  "description": "Stock prices of 5 Tech Companies over Time.",
+    "data": {"url": "data/oil_production.csv"},
+  "encoding": {
+    "color": {"field": "Entity", "legend": {"offset": 80}},
+    "x": {"field": "Oil production (TWh)", "type": "quantitative"},
+    "y": {
+      "field": "Entity",
+      "type": "nominal",
+      "sort": {"field": "Oil production (TWh)", "order": "descending"},
+      "axis": false
+    },
+    "time": {
+      "field": "Year",
+      "scale": {"type": "band", "range": [0, 10000]},
+      "key": {"field": "Entity"},
+      "rescale": true
+    }
+  },
+  "params": [
+    {
+      "name": "year",
+      "select": {"type": "point", "on": "timer"},
+      "bind": {"input": "range", "min": 1980, "max": 2020, "step": 1}
+    }
+  ],
+  "transform": [
+    {"calculate": "toNumber(datum.Year)", "as": "Year"},
+    {"calculate": "toNumber(datum['Oil production (TWh)'])", "as": "Oil production (TWh)"},
+    {
+      "sort": [
+        {"field": "Year", "order": "descending"},
+        {"field": "Oil production (TWh)", "order": "descending"}
+      ],
+      "window": [{"op": "rank", "as": "rank"}],
+      "groupby": ["Year"]
+    },
+    {"filter": {"param": "year"}},
+    {"filter": {"field": "rank", "lte": 10}}
+  ],
+  "layer": [
+    {"mark": "bar"},
+    {
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "baseline": "top",
+        "dx": 3,
+        "dy": 4
+      },
+      "encoding": {"text": {"field": "Entity"}}
+    }
+  ]
+}

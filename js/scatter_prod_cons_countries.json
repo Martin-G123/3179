@@ -1,0 +1,67 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+  "description": "Scatterplot of oil consumption vs production with diagonal y=x line.",
+  "title": "Production vs. Consumption on a log-log Scale",
+  "width": 400,
+  "height": 400,
+  "params": [
+    {
+      "name": "year_equals",
+      "value": 2000,
+      "bind": {
+        "input": "range",
+        "min": 1965,
+        "max": 2024,
+        "step": 1,
+        "name": "Select Year:"
+      }
+    }
+  ],
+  
+  "data": {"url": "https://raw.githubusercontent.com/Martin-G123/3179/refs/heads/main/Code/data/joined_cons_prod_countries.csv"},
+  
+  "transform": [
+    {"filter": "datum['Oil consumption - TWh'] > 0"},
+    {"filter": "datum['Oil production (TWh)'] > 0"},
+    {"filter": "datum.year == year_equals"}
+  ],
+  
+  "layer": [
+    {
+      "mark": "point",
+      "encoding": {
+        "x": {
+          "field": "Oil consumption - TWh",
+          "type": "quantitative",
+          "scale": {"type": "log", "zero": false},
+          "axis": {"title": "Oil Consumption (TWh)"}
+        },
+        "y": {
+          "field": "Oil production (TWh)",
+          "type": "quantitative",
+          "scale": {"type": "log", "zero": false},
+          "axis": {"title": "Oil Production (TWh)"}
+        },
+        "tooltip": [
+          {"field": "Country", "title": "Country"},
+          {"field": "year", "title": "Year"},
+          {"field": "Oil consumption - TWh", "title": "Consumption (TWh)", "format": ".2f"},
+          {"field": "Oil production (TWh)", "title": "Production (TWh)", "format": ".2f"}
+        ]
+      }
+    },
+    {
+      "mark": {"type": "line", "color": "red", "strokeDash": [4, 4]},
+      "data": {
+        "values": [
+          {"x": 1, "y": 1},
+          {"x": 1e5, "y": 1e5}
+        ]
+      },
+      "encoding": {
+        "x": {"field": "x", "type": "quantitative", "scale": {"type": "log"}},
+        "y": {"field": "y", "type": "quantitative", "scale": {"type": "log"}}
+      }
+    }
+  ]
+}
