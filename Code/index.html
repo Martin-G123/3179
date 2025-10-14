@@ -31,11 +31,25 @@
     <!-- pure grid group -->
     <div class="pure-g">
       <div class="pure-u-1-1">
-        <h1>Multiple Visualisations</h1>
-        <p>This page demonstrates how you can use pure.css grid for your layout.</p>
+        <h1>Trends in Production and Consumption of Oil, with Price Factors</h1>
+        <p>A Deep dive into the demographics of oil production and consumption.</p>
       </div>
     </div>
     <!-- end pure grid group -->
+
+    <!-- pure grid group -->
+    <div class="pure-g">
+      <div class="pure-u-1-1">
+        <h1>Multiple Visualisations</h1>
+        <p>How much energy is 1 TWh of oil?
+          1.6 million barrels approximately. Enough to fill 102 olympic size swimming pools. More than Australia's daily 1.1 million barrel consumption of oil.
+          
+        </p>
+      </div>
+    </div>
+    <!-- end pure grid group -->
+
+
 
     <!-- pure grid group -->
     <div class="pure-g">
@@ -101,13 +115,6 @@
     <!-- end pure grid group -->
 
 
-    <div class="pure-g">
-      <div class="pure-u-1-1 small-font">
-        <p>This visualisation is created by <a href="https://fit3179.github.io/Vega-Lite/" target="_blank">FIT3179
-            Teaching Team</a>. The datasource is <a href="#" target=" _blank">some data repository online</href>.</p>
-      </div>
-    </div>
-
  <div class="pure-g">
       <div class="pure-u-1-1">
         <div id="vis1" class="vis-container"></div>
@@ -119,25 +126,69 @@
     <div class="pure-g">
       <div class="pure-u-1-3">
         <div class="description description-left">
-          <h2>Three Equal Columns</h2>
-          <p>Using all three columns without merging. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Massa sapien faucibus et molestie ac feugiat
-            sed. Egestas purus viverra accumsan in nisl. Egestas purus viverra accumsan in nisl.
-          
-            There appears to be minimal impact of pricing on global production in oil. This may indicate that pricing is driven moreso by markets, rather than a fundamentally,,,, i think this is wrong, but anyways, re Or maybe the relationship between them is very tight so that small change creates big change, etc...</p>
+          <h2>The Connection between Oil Prices and Production</h2>
+          <p>The Relationship between oil price and production is such that small overall changes in production create big fluctuations in price. This may be explained by the world's relatively inelastic demand for petroleum products, meaning small fluctuations in production can have larger impacts on price.</p>
         </div>
       </div>
-      <div class="pure-u-1-3">
+      <div class="pure-u-1-2">
         <div id="vis6" class="vis-container"></div>
       </div>
-      <div class="pure-u-1-3" style="width: 31.5%;">
-        <div id="vis5" class="vis-container" style="margin-left: 15px;"></div>
-      </div>
+
 
     </div>
     <!-- end pure grid group -->
 
+    <!-- pure grid group -->
+    <div class="pure-g">
+      <div class="pure-u-1-2">
+        <div class="description description-left">
+          <h2>Two Columns Layout</h2>
+          <p>The oil market has been diversified by more players over time. Historically, much of the world's production and consumption has been led by a few key market players. Countries with strong economies. As the world has modernised, with many countries developing their own industry and economies, production and consumption has been more evenly split between more countries.</p>
+        </div>
+      </div>
+      <div class="pure-u-1-2">
+        <div id="vis7" class="vis-container"></div>
+      </div>
+    </div>
+    <!-- end pure grid group -->
 
+    <!-- pure grid group -->
+    <div class="pure-g">
+      <div class="pure-u-1-2"  style="width: 31.5%;">
+        <div class="description description-left">
+          <h2>Net Importers vs. Net Exporters</h2>
+          <p> To the right we see a log-log representation of production vs. consumption of oil. Countries below the line are net importers, while countries above the line are net exporters 
+             </p>
+        </div>
+      </div>
+      <div class="pure-u-1-2">
+        <div id="vis8" class="vis-container"></div>
+      </div>
+    </div>
+    <!-- end pure grid group -->
+
+    <!-- pure grid group -->
+    <div class="pure-g">
+      <div class="pure-u-1-2"  style="width: 31.5%;">
+        <div class="description description-left">
+          <h2>Relationship between Price and Production</h2>
+          <p>  
+             </p>
+        </div>
+      </div>
+      <div class="pure-u-1-2">
+        <div id="vis9" class="vis-container"></div>
+      </div>
+    </div>
+    <!-- end pure grid group -->
+
+
+    <div class="pure-g">
+      <div class="pure-u-1-1 small-font">
+        <p>This visualisation is created by <a href="https://github.com/Martin-G123/3179" target="_blank">Martin G</a>. 
+          The data is sourced from Our World in Data oil <a href="https://ourworldindata.org/grapher/oil-production-by-country" target=" _blank">production</a> and <a href="https://ourworldindata.org/grapher/oil-consumption-by-country" target=" _blank">consumption</a> datasets.</p>  Additional pricing data for Brent Crude is sourced from <a href="https://www.statista.com/statistics/262860/uk-brent-crude-oil-price-changes-since-1976/">Statista</a>.</p></p>
+      </div>
+    </div>
 
   </div> <!-- end page -->
 
@@ -149,6 +200,9 @@
     var specVis5 = "js/scatter_plot.json"
     var specVis5 = "js/stacked_area.json"
     var specVis6 = "js/interactive.json"
+    var specVis7 = "js/biggest_producers_bar.json"
+    var specVis8 = "js/scatter_prod_cons_countries.json"
+    var specVis9 = "js/price_to_production.json"
 
 
     vegaEmbed('#vis1', specVis1, { "actions": false });
@@ -172,6 +226,20 @@
     vegaEmbed('#vis6', specVis6, { "actions": false }).then(function (result) {
       // Access the Vega view instance (https://vega.github.io/vega/docs/api/view/) as result.view
     }).catch(console.error);
+    
+    vegaEmbed('#vis7', specVis7, { "actions": false }).then(function (result) {
+      // Access the Vega view instance (https://vega.github.io/vega/docs/api/view/) as result.view
+    }).catch(console.error);
+
+    vegaEmbed('#vis8', specVis8, { "actions": false }).then(function (result) {
+      // Access the Vega view instance (https://vega.github.io/vega/docs/api/view/) as result.view
+    }).catch(console.error);
+
+    vegaEmbed('#vis9', specVis9, { "actions": false }).then(function (result) {
+      // Access the Vega view instance (https://vega.github.io/vega/docs/api/view/) as result.view
+    }).catch(console.error);
+
+
   </script>
 </body>
 

@@ -1,0 +1,72 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+  "description": "A bar chart with top consumers and producers",
+  
+    "params": [
+    {
+      "name": "year_equals",
+      "value": 2000,
+      "bind": {
+        "input": "range",
+        "min": 1965,
+        "max": 2024,
+        "step": 1,
+        "name": "Select Year:"
+      }
+    }
+  ],
+  
+  "hconcat": [
+    {
+    "title": "Oil Production by Country",
+    "data": {"url": "data/oil_production_filtered.csv"},
+    "transform": [{"filter": "datum.Year == year_equals"},
+    {"filter": "datum['Oil production (TWh)'] > 0"}
+      ],
+    "height": {"step": 17},
+    "mark": "bar",
+    "encoding": {
+      "y": {
+        "field": "Entity",
+        "type": "nominal",
+        "sort": "-x"
+      },
+      "x": {
+        "aggregate": "sum",
+        "field": "Oil production (TWh)",
+        "title": "Oil Production (TWh)"
+      },
+      "tooltip": [
+        {"field": "Entity", "type": "nominal", "title": "Country"},
+        {"aggregate": "sum", "field": "Oil production (TWh)", "type": "quantitative", "title": "Production (TWh)"}
+      ]
+    }
+  },
+
+  {
+    "title": "Oil Consumption by Country",
+    "data": {"url": "data/oil_consumption_filtered.csv"},
+    "transform": [{"filter": "datum.Year == year_equals"},
+  {"filter": "datum['Oil consumption - TWh'] > 0"}],
+    "height": {"step": 17},
+    "mark": "bar",
+    "encoding": {
+      "y": {
+        "field": "Entity",
+        "type": "nominal",
+        "sort": "-x"
+      },
+      "x": {
+        "aggregate": "sum",
+        "field": "Oil consumption - TWh",
+        "title": "Oil consumption - TWh"
+      },
+      "tooltip": [
+        {"field": "Entity", "type": "nominal", "title": "Country"},
+        {"aggregate": "sum", "field": "Oil consumption - TWh", "type": "quantitative", "title": "Consumption (TWh)"}
+      ]
+    }
+  }
+
+]
+}

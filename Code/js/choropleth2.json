@@ -1,6 +1,6 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-  "title": "COVID-19 Active Cases (10 Oct 2020)",
+  "title": "Global Oil Production by Country",
   "width": 800,
   "height": 400,
 
@@ -57,7 +57,7 @@
                   "url": "data/oil_production_filtered.csv"
                 },
                 "key": "Entity",
-                "fields": ["Oil production (TWh)", "Year"]
+                "fields": ["Year", "Oil production (TWh)"]
               }
             },
              {
@@ -98,7 +98,7 @@
         "text": {"field": "properties.NAME", "type": "nominal"},
         "opacity": {
           "condition": {
-            "test": "datum['properties.NAME'] == 'China' || datum['properties.NAME'] == 'Brazil' || datum['properties.NAME'] == 'Australia' || datum['properties.NAME'] == 'Malaysia' ||  datum['properties.NAME'] == 'Yemen' ||  datum['properties.NAME'] == 'United States of America'",
+            "test": "datum['properties.NAME'] == 'China' || datum['properties.NAME'] == 'Venezuela' || datum['properties.NAME'] == 'Australia' || datum['properties.NAME'] == 'Russia' ||  datum['properties.NAME'] == 'United Arab Emirates' ||  datum['properties.NAME'] == 'United States of America'",
             "value": 1
           },
           "value": 0
