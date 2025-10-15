@@ -1,6 +1,6 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
-  "description": "A bar chart with top consumers and producers",
+  "description": "A bar chart with top 10 consumers and producers (Corrected Ranking)",
   
     "params": [
     {
@@ -18,10 +18,25 @@
   
   "hconcat": [
     {
-    "title": "Oil Production by Country",
+    "title": "Top 10 Oil Production by Country",
     "data": {"url": "https://raw.githubusercontent.com/Martin-G123/3179/refs/heads/main/Code/data/oil_production_filtered.csv"},
-    "transform": [{"filter": "datum.Year == year_equals"},
-    {"filter": "datum['Oil production (TWh)'] > 0"}
+    "transform": [
+        {"filter": "datum.Year == year_equals"},
+        {"filter": "datum['Oil production (TWh)'] > 0"},
+        
+        {
+          "joinaggregate": [
+            {"op": "sum", "field": "Oil production (TWh)", "as": "Total_Production_Year"}
+          ],
+          "groupby": ["Entity"]
+        },
+        
+        {
+          "window": [{"op": "rank", "as": "rank"}],
+          "sort": [{"field": "Total_Production_Year", "order": "descending"}]
+        },
+        
+        {"filter": "datum.rank <= 10"}
       ],
     "height": {"step": 17},
     "mark": "bar",
@@ -29,44 +44,67 @@
       "y": {
         "field": "Entity",
         "type": "nominal",
-        "sort": "-x"
+        "sort": "-x", 
+        "title": ""
       },
       "x": {
-        "aggregate": "sum",
-        "field": "Oil production (TWh)",
+        "field": "Total_Production_Year", 
+        "type": "quantitative",
         "title": "Oil Production (TWh)"
+      },
+      "color": {
+        "condition": {
+          "test": "datum.Entity === 'United States of America'",
+          "value": "red" 
+        }
       },
       "tooltip": [
         {"field": "Entity", "type": "nominal", "title": "Country"},
-        {"aggregate": "sum", "field": "Oil production (TWh)", "type": "quantitative", "title": "Production (TWh)"}
+        {"field": "Total_Production_Year", "type": "quantitative", "title": "Production (TWh)"}
       ]
     }
   },
 
   {
-    "title": "Oil Consumption by Country",
+    "title": "Top 10 Oil Consumption by Country",
     "data": {"url": "https://raw.githubusercontent.com/Martin-G123/3179/refs/heads/main/Code/data/oil_consumption_filtered.csv"},
-    "transform": [{"filter": "datum.Year == year_equals"},
-  {"filter": "datum['Oil consumption - TWh'] > 0"}],
+    "transform": [
+        {"filter": "datum.Year == year_equals"},
+        {"filter": "datum['Oil consumption - TWh'] > 0"},
+        
+        {
+          "joinaggregate": [
+            {"op": "sum", "field": "Oil consumption - TWh", "as": "Total_Consumption_Year"}
+          ],
+          "groupby": ["Entity"]
+        },
+        
+        {
+          "window": [{"op": "rank", "as": "rank"}],
+          "sort": [{"field": "Total_Consumption_Year", "order": "descending"}]
+        },
+        
+        {"filter": "datum.rank <= 10"}
+    ],
     "height": {"step": 17},
     "mark": "bar",
     "encoding": {
       "y": {
         "field": "Entity",
         "type": "nominal",
-        "sort": "-x"
+        "sort": "-x",
+        "title": ""
       },
       "x": {
-        "aggregate": "sum",
-        "field": "Oil consumption - TWh",
+        "field": "Total_Consumption_Year",
+        "type": "quantitative",
         "title": "Oil consumption - TWh"
       },
       "tooltip": [
         {"field": "Entity", "type": "nominal", "title": "Country"},
-        {"aggregate": "sum", "field": "Oil consumption - TWh", "type": "quantitative", "title": "Consumption (TWh)"}
+        {"field": "Total_Consumption_Year", "type": "quantitative", "title": "Consumption (TWh)"}
       ]
     }
   }
-
 ]
 }

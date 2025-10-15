@@ -21,6 +21,17 @@
   "data": {"url": "https://raw.githubusercontent.com/Martin-G123/3179/refs/heads/main/Code/data/joined_cons_prod_countries.csv"},
   
   "transform": [
+    {
+      "lookup": "Country",
+      "from": {
+        "data": {"url": "https://raw.githubusercontent.com/Martin-G123/3179/refs/heads/main/data/country_continent.csv"},
+        "key": "Country",
+        "fields": ["Continent"]
+      },
+      "as": "Continent"
+    },
+    
+    
     {"filter": "datum['Oil consumption - TWh'] > 0"},
     {"filter": "datum['Oil production (TWh)'] > 0"},
     {"filter": "datum.year == year_equals"}
@@ -28,19 +39,28 @@
   
   "layer": [
     {
-      "mark": "point",
+      "mark": {
+        "type": "point",
+        "size": 80
+      },
       "encoding": {
         "x": {
           "field": "Oil consumption - TWh",
           "type": "quantitative",
-          "scale": {"type": "log", "zero": false},
+          "scale": {"type": "log", "zero": false,"domain": [0.1, 100000]},
           "axis": {"title": "Oil Consumption (TWh)"}
         },
         "y": {
           "field": "Oil production (TWh)",
           "type": "quantitative",
-          "scale": {"type": "log", "zero": false},
+          "scale": {"type": "log", "zero": false,"domain": [0.001, 100000]},
           "axis": {"title": "Oil Production (TWh)"}
+        },
+        "color": {
+          "field": "Continent",
+          "type": "nominal",
+          "legend": {"title": "Continent"},
+          "scale": {"range": "category"}
         },
         "tooltip": [
           {"field": "Country", "title": "Country"},
@@ -54,7 +74,7 @@
       "mark": {"type": "line", "color": "red", "strokeDash": [4, 4]},
       "data": {
         "values": [
-          {"x": 1, "y": 1},
+          {"x": 0.1, "y": 0.1},
           {"x": 1e5, "y": 1e5}
         ]
       },
