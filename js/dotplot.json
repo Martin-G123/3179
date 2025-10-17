@@ -1,0 +1,231 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+    "text": "Continental Oil Production: Distribution and Trends",
+    "fontSize": 18,
+    "fontWeight": "bold",
+    "anchor": "middle"
+  },
+  "spacing": 20,
+  "data": {
+    "url": "https://raw.githubusercontent.com/Martin-G123/3179/refs/heads/main/Code/data/oil_production_filtered.csv"
+  },
+  "transform": [
+    {
+      "lookup": "Entity",
+      "from": {
+        "data": {
+          "url": "https://raw.githubusercontent.com/Martin-G123/3179/refs/heads/main/data/country_continent.csv"
+        },
+        "key": "Country",
+        "fields": ["Continent"]
+      }
+    },
+    {"filter": "datum.Continent != null"},
+    {"filter": "datum['Oil production (TWh)'] > 0"},
+    {
+      "aggregate": [
+        {"op": "sum", "field": "Oil production (TWh)", "as": "Total_Production"}
+      ],
+      "groupby": ["Year", "Continent"]
+    }
+  ],
+  "hconcat": [
+    {
+      "title": {
+        "text": "Continental Production Distribution",
+        "fontSize": 14,
+        "fontWeight": "bold",
+        "subtitle": "Drag to select time range • Stacked area shows proportion",
+        "subtitleFontSize": 11,
+        "subtitleColor": "gray"
+      },
+      "width": 500,
+      "height": 400,
+      "params": [
+        {
+          "name": "time_brush",
+          "select": {"type": "interval", "encodings": ["x"]}
+        }
+      ],
+      "mark": {
+        "type": "area",
+        "interpolate": "monotone",
+        "opacity": 0.8
+      },
+      "encoding": {
+        "x": {
+          "field": "Year",
+          "type": "quantitative",
+          "axis": {
+            "title": "Year",
+            "format": "d",
+            "titleFontSize": 12,
+            "titleFontWeight": "bold",
+            "labelFontSize": 10,
+            "grid": false
+          },
+          "scale": {
+            "domainMin": 1900
+          }
+        },
+        "y": {
+          "field": "Total_Production",
+          "type": "quantitative",
+          "stack": "normalize",
+          "axis": {
+            "title": "Proportion of Global Production",
+            "titleFontSize": 12,
+            "titleFontWeight": "bold",
+            "labelFontSize": 10,
+            "format": ".0%",
+            "grid": true,
+            "gridOpacity": 0.2
+          }
+        },
+        "color": {
+          "field": "Continent",
+          "type": "nominal",
+          "scale": {
+            "scheme": "category20"
+          },
+          "legend": {
+            "title": "Continent",
+            "titleFontSize": 11,
+            "titleFontWeight": "bold",
+            "labelFontSize": 10,
+            "orient": "top"
+          }
+        },
+        "tooltip": [
+          {"field": "Continent", "type": "nominal", "title": "Continent"},
+          {"field": "Year", "type": "quantitative", "title": "Year", "format": "d"},
+          {
+            "field": "Total_Production",
+            "type": "quantitative",
+            "title": "Production (TWh)",
+            "format": ",.1f"
+          }
+        ]
+      }
+    },
+    {
+      "vconcat": [
+        {
+          "title": {
+            "text": "Absolute Production Volumes",
+            "fontSize": 14,
+            "fontWeight": "bold",
+            "subtitle": "Total TWh produced per continent (filtered by time selection)",
+            "subtitleFontSize": 11,
+            "subtitleColor": "gray"
+          },
+          "width": 500,
+          "height": 400,
+          "transform": [
+            {"filter": {"param": "time_brush"}}
+          ],
+          "layer": [
+            {
+              "mark": {
+                "type": "area",
+                "opacity": 0.3,
+                "interpolate": "monotone"
+              },
+              "encoding": {
+                "x": {
+                  "field": "Year",
+                  "type": "quantitative",
+                  "axis": {
+                    "title": null,
+                    "format": "d",
+                    "labelFontSize": 10,
+                    "grid": false
+                  },
+                  "scale": {
+                    "domainMin": 1900
+                  }
+                },
+                "y": {
+                  "field": "Total_Production",
+                  "type": "quantitative",
+                  "axis": {
+                    "title": "Production (TWh)",
+                    "titleFontSize": 11,
+                    "titleFontWeight": "bold",
+                    "labelFontSize": 10,
+                    "grid": true,
+                    "gridOpacity": 0.3
+                  }
+                },
+                "color": {
+                  "field": "Continent",
+                  "type": "nominal",
+                  "scale": {
+                    "scheme": "tableau10"
+                  },
+                  "legend": null
+                }
+              }
+            },
+            {
+              "mark": {
+                "type": "line",
+                "strokeWidth": 2.5,
+                "interpolate": "monotone"
+              },
+              "encoding": {
+                "x": {
+                  "field": "Year",
+                  "type": "quantitative",
+                  "scale": {
+                    "domainMin": 1900
+                  }
+                },
+                "y": {
+                  "field": "Total_Production",
+                  "type": "quantitative"
+                },
+                "color": {
+                  "field": "Continent",
+                  "type": "nominal",
+                  "scale": {
+                    "scheme": "tableau10"
+                  },
+                  "legend": {
+                    "title": "Continent",
+                    "titleFontSize": 11,
+                    "titleFontWeight": "bold",
+                    "labelFontSize": 10,
+                    "orient": "right",
+                    "symbolType": "stroke",
+                    "symbolStrokeWidth": 3
+                  }
+                },
+                "tooltip": [
+                  {"field": "Continent", "type": "nominal", "title": "Continent"},
+                  {"field": "Year", "type": "quantitative", "title": "Year", "format": "d"},
+                  {
+                    "field": "Total_Production",
+                    "type": "quantitative",
+                    "title": "Production (TWh)",
+                    "format": ",.1f"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "config": {
+    "view": {
+      "stroke": null
+    },
+    "axis": {
+      "domainColor": "#ddd",
+      "tickColor": "#ddd"
+    }
+  }
+}

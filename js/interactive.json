@@ -1,83 +1,208 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "spacing": 20,
   "vconcat": [
     {
-      "title":"Oil Production by Continent",
-      "data": { "url": "https://raw.githubusercontent.com/Martin-G123/3179/refs/heads/main/Code/data/Production_World_and_continent.csv" },
+      "title": {
+        "text": "Oil Production by Continent",
+        "fontSize": 16,
+        "fontWeight": "bold",
+        "anchor": "start"
+      },
+      "data": {
+        "url": "https://raw.githubusercontent.com/Martin-G123/3179/refs/heads/main/Code/data/Production_World_and_continent.csv"
+      },
       "transform": [
-        { "calculate": "toNumber(datum.Year)", "as": "YearNum" },
-        { "filter": "datum.YearNum >= 1976 && datum.YearNum <= 2024" },
+        {"calculate": "toNumber(datum.Year)", "as": "YearNum"},
+        {"filter": "datum.YearNum >= 1976 && datum.YearNum <= 2024"},
         {
           "filter": "indexof(['Asia','Africa','North America','South America','Europe'], datum.Entity) >= 0"
         },
-        { "filter": { "param": "brush" } } 
+        {"filter": {"param": "brush"}}
       ],
-      "width": 480,
-      "height": 240,
-      "mark": "area",
+      "width": 800,
+      "height": 280,
+      "mark": {
+        "type": "area",
+        "interpolate": "monotone",
+        "opacity": 0.85
+      },
       "encoding": {
         "x": {
           "field": "YearNum",
           "type": "quantitative",
-          "axis": { "title": "Year (1976–2024)", "format": "d" }
+          "axis": {
+            "title": "Year",
+            "format": "d",
+            "titleFontSize": 13,
+            "titleFontWeight": "bold",
+            "labelFontSize": 11,
+            "grid": false
+          }
         },
         "y": {
           "aggregate": "sum",
           "field": "Oil production (TWh)",
           "type": "quantitative",
-          "axis": { "title": "Oil production (TWh)" }
+          "axis": {
+            "title": "Oil Production (TWh)",
+            "titleFontSize": 13,
+            "titleFontWeight": "bold",
+            "labelFontSize": 11,
+            "grid": true,
+            "gridOpacity": 0.3
+          }
         },
-        "color": { "field": "Entity", "type": "nominal", "legend": { "title": "Entity" } }
+        "color": {
+          "field": "Entity",
+          "type": "nominal",
+          "scale": {
+            "scheme": "category20"
+          },
+          "legend": {
+            "title": "Continent",
+            "titleFontSize": 12,
+            "titleFontWeight": "bold",
+            "labelFontSize": 11,
+            "orient": "right"
+          }
+        },
+        "tooltip": [
+          {"field": "Entity", "type": "nominal", "title": "Continent"},
+          {"field": "YearNum", "type": "quantitative", "title": "Year", "format": "d"},
+          {
+            "field": "Oil production (TWh)",
+            "type": "quantitative",
+            "title": "Production (TWh)",
+            "format": ",.1f"
+          }
+        ]
       }
     },
-
     {
-      "title":"Oil Price by Year",
-      "data": { "url": "https://raw.githubusercontent.com/Martin-G123/3179/refs/heads/main/Code/data/Oil%20Prices.csv" },
+      "title": {
+        "text": "Oil Price by Year",
+        "fontSize": 16,
+        "fontWeight": "bold",
+        "anchor": "start"
+      },
+      "data": {
+        "url": "https://raw.githubusercontent.com/Martin-G123/3179/refs/heads/main/Code/data/Oil%20Prices.csv"
+      },
       "transform": [
-        { "calculate": "toNumber(datum.Year)", "as": "YearNum" }
+        {"calculate": "toNumber(datum.Year)", "as": "YearNum"}
       ],
-      "width": 480,
-      "height": 240,
-      "mark": "area",
+      "width": 800,
+      "height": 200,
+      "layer": [
+        {
+          "mark": {
+            "type": "area",
+            "interpolate": "monotone",
+            "color": "#d95f02",
+            "opacity": 0.7,
+            "line": {
+              "color": "#8c510a",
+              "strokeWidth": 2
+            }
+          },
+          "encoding": {
+            "x": {
+              "field": "YearNum",
+              "type": "quantitative",
+              "scale": {"domain": {"param": "brush"}},
+              "axis": {
+                "title": "Year",
+                "format": "d",
+                "titleFontSize": 13,
+                "titleFontWeight": "bold",
+                "labelFontSize": 11,
+                "grid": false
+              }
+            },
+            "y": {
+              "field": "Oil Price (USD)",
+              "type": "quantitative",
+              "axis": {
+                "title": "Oil Price (USD per barrel)",
+                "titleFontSize": 13,
+                "titleFontWeight": "bold",
+                "labelFontSize": 11,
+                "grid": true,
+                "gridOpacity": 0.3
+              }
+            },
+            "tooltip": [
+              {"field": "YearNum", "type": "quantitative", "title": "Year", "format": "d"},
+              {
+                "field": "Oil Price (USD)",
+                "type": "quantitative",
+                "title": "Price (USD)",
+                "format": "$.2f"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "title": {
+        "text": "Brush to Filter Time Range",
+        "fontSize": 13,
+        "fontWeight": "normal",
+        "anchor": "start",
+        "color": "gray"
+      },
+      "data": {
+        "url": "https://raw.githubusercontent.com/Martin-G123/3179/refs/heads/main/Code/data/Oil%20Prices.csv"
+      },
+      "transform": [
+        {"calculate": "toNumber(datum.Year)", "as": "YearNum"}
+      ],
+      "width": 800,
+      "height": 80,
+      "mark": {
+        "type": "area",
+        "interpolate": "monotone",
+        "color": "#bdbdbd",
+        "opacity": 0.6
+      },
+      "params": [
+        {
+          "name": "brush",
+          "select": {"type": "interval", "encodings": ["x"]}
+        }
+      ],
       "encoding": {
         "x": {
           "field": "YearNum",
           "type": "quantitative",
-          "scale": { "domain": { "param": "brush" } },
-          "axis": { "title": "Year", "format": "d" }
+          "axis": {
+            "format": "d",
+            "title": null,
+            "labelFontSize": 10
+          }
         },
         "y": {
           "field": "Oil Price (USD)",
           "type": "quantitative",
-          "axis": { "title": "Oil Price (USD)" }
-        }
-      }
-    },
-
-    {
-      "title":"Oil Price Brush Chart",
-      "data": { "url": "https://raw.githubusercontent.com/Martin-G123/3179/refs/heads/main/Code/data/Oil%20Prices.csv" },
-      "transform": [
-        { "calculate": "toNumber(datum.Year)", "as": "YearNum" }
-      ],
-      "width": 480,
-      "height": 60,
-      "mark": "area",
-      "params": [
-        {
-          "name": "brush",
-          "select": { "type": "interval", "encodings": ["x"] }
-        }
-      ],
-      "encoding": {
-        "x": { "field": "YearNum", "type": "quantitative", "axis": { "format": "d" } },
-        "y": {
-          "field": "Oil Price (USD)",
-          "type": "quantitative",
-          "axis": { "tickCount": 3, "grid": false }
+          "axis": {
+            "tickCount": 3,
+            "grid": false,
+            "title": null,
+            "labelFontSize": 9
+          }
         }
       }
     }
-  ]
+  ],
+  "config": {
+    "view": {
+      "stroke": null
+    },
+    "axis": {
+      "domainColor": "#ddd",
+      "tickColor": "#ddd"
+    }
+  }
 }

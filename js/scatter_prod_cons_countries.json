@@ -1,9 +1,17 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
-  "description": "Scatterplot of oil consumption vs production with diagonal y=x line.",
-  "title": "Production vs. Consumption on a log-log Scale",
-  "width": 400,
-  "height": 400,
+  "description": "Oil consumption vs production with diagonal reference line",
+  "title": {
+    "text": "Production vs. Consumption on a Log-Log Scale",
+    "fontSize": 16,
+    "fontWeight": "bold",
+    "anchor": "middle",
+    "subtitle": "Countries above the line are net exporters, below are net importers",
+    "subtitleFontSize": 12,
+    "subtitleColor": "gray"
+  },
+  "width": 800,
+  "height": 500,
   "params": [
     {
       "name": "year_equals",
@@ -17,71 +25,172 @@
       }
     }
   ],
-  
-  "data": {"url": "https://raw.githubusercontent.com/Martin-G123/3179/refs/heads/main/Code/data/joined_cons_prod_countries.csv"},
-  
+  "data": {
+    "url": "https://raw.githubusercontent.com/Martin-G123/3179/refs/heads/main/Code/data/joined_cons_prod_countries.csv"
+  },
   "transform": [
     {
       "lookup": "Country",
       "from": {
-        "data": {"url": "https://raw.githubusercontent.com/Martin-G123/3179/refs/heads/main/data/country_continent.csv"},
+        "data": {
+          "url": "https://raw.githubusercontent.com/Martin-G123/3179/refs/heads/main/data/country_continent.csv"
+        },
         "key": "Country",
         "fields": ["Continent"]
       },
       "as": "Continent"
     },
-    
-    
     {"filter": "datum['Oil consumption - TWh'] > 0"},
     {"filter": "datum['Oil production (TWh)'] > 0"},
     {"filter": "datum.year == year_equals"}
   ],
-  
   "layer": [
     {
       "mark": {
-        "type": "point",
-        "size": 80
+        "type": "line",
+        "color": "#e74c3c",
+        "strokeDash": [6, 4],
+        "strokeWidth": 2,
+        "opacity": 0.7
+      },
+      "data": {
+        "values": [
+          {"x": 0.1, "y": 0.1},
+          {"x": 100000, "y": 100000}
+        ]
+      },
+      "encoding": {
+        "x": {
+          "field": "x",
+          "type": "quantitative",
+          "scale": {"type": "log"}
+        },
+        "y": {
+          "field": "y",
+          "type": "quantitative",
+          "scale": {"type": "log"}
+        }
+      }
+    },
+    {
+      "mark": {
+        "type": "circle",
+        "size": 100,
+        "opacity": 0.8,
+        "strokeWidth": 1.5,
+        "stroke": "white"
       },
       "encoding": {
         "x": {
           "field": "Oil consumption - TWh",
           "type": "quantitative",
-          "scale": {"type": "log", "zero": false,"domain": [0.1, 100000]},
-          "axis": {"title": "Oil Consumption (TWh)"}
+          "scale": {
+            "type": "log",
+            "zero": false,
+            "domain": [0.1, 100000]
+          },
+          "axis": {
+            "title": "Oil Consumption (TWh)",
+            "titleFontSize": 13,
+            "titleFontWeight": "bold",
+            "grid": true,
+            "gridOpacity": 0.2,
+            "labelFontSize": 11
+          }
         },
         "y": {
           "field": "Oil production (TWh)",
           "type": "quantitative",
-          "scale": {"type": "log", "zero": false,"domain": [0.001, 100000]},
-          "axis": {"title": "Oil Production (TWh)"}
+          "scale": {
+            "type": "log",
+            "zero": false,
+            "domain": [0.001, 100000]
+          },
+          "axis": {
+            "title": "Oil Production (TWh)",
+            "titleFontSize": 13,
+            "titleFontWeight": "bold",
+            "grid": true,
+            "gridOpacity": 0.2,
+            "labelFontSize": 11
+          }
         },
         "color": {
           "field": "Continent",
           "type": "nominal",
-          "legend": {"title": "Continent"},
-          "scale": {"range": "category"}
+          "legend": {
+            "title": "Continent",
+            "titleFontSize": 12,
+            "titleFontWeight": "bold",
+            "labelFontSize": 11,
+            "symbolSize": 100,
+            "orient": "right"
+          },
+          "scale": {
+            "scheme": "category20"
+          }
         },
         "tooltip": [
-          {"field": "Country", "title": "Country"},
-          {"field": "year", "title": "Year"},
-          {"field": "Oil consumption - TWh", "title": "Consumption (TWh)", "format": ".2f"},
-          {"field": "Oil production (TWh)", "title": "Production (TWh)", "format": ".2f"}
+          {"field": "Country", "title": "Country", "type": "nominal"},
+          {"field": "Continent", "title": "Continent", "type": "nominal"},
+          {"field": "year", "title": "Year", "type": "quantitative"},
+          {
+            "field": "Oil consumption - TWh",
+            "title": "Consumption (TWh)",
+            "format": ",.2f",
+            "type": "quantitative"
+          },
+          {
+            "field": "Oil production (TWh)",
+            "title": "Production (TWh)",
+            "format": ",.2f",
+            "type": "quantitative"
+          }
         ]
       }
     },
     {
-      "mark": {"type": "line", "color": "red", "strokeDash": [4, 4]},
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "baseline": "bottom",
+        "color": "black",
+        "fontSize": 14,
+        "text": [
+          "Values above the line are net exporters",
+          "while values below the line are net importers"
+        ]
+      },
       "data": {
         "values": [
-          {"x": 0.1, "y": 0.1},
-          {"x": 1e5, "y": 1e5}
+          {
+            "x_pos": 0.15,
+            "y_pos": 0.005
+          }
         ]
       },
       "encoding": {
-        "x": {"field": "x", "type": "quantitative", "scale": {"type": "log"}},
-        "y": {"field": "y", "type": "quantitative", "scale": {"type": "log"}}
+        "x": {
+          "field": "x_pos",
+          "type": "quantitative",
+          "scale": {"type": "log"}
+        },
+        "y": {
+          "field": "y_pos",
+          "type": "quantitative",
+          "scale": {"type": "log"}
+        }
       }
     }
-  ]
+  ],
+  "config": {
+    "view": {
+      "stroke": "lightgray",
+      "strokeWidth": 1
+    },
+    "axis": {
+      "domainColor": "#ccc",
+      "tickColor": "#ccc"
+    }
+  }
 }
