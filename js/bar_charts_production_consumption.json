@@ -1,0 +1,223 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+  "description": "Top 10 oil producers and consumers by country",
+  "spacing": 40,
+  "params": [
+    {
+      "name": "year_equals",
+      "value": 2000,
+      "bind": {
+        "input": "range",
+        "min": 1965,
+        "max": 2024,
+        "step": 1,
+        "name": "Select Year:"
+      }
+    }
+  ],
+  "hconcat": [
+    {
+      "title": {
+        "text": "Top 10 Oil Producers",
+        "fontSize": 16,
+        "fontWeight": "bold",
+        "anchor": "middle"
+      },
+      "data": {
+        "url": "https://raw.githubusercontent.com/Martin-G123/3179/refs/heads/main/Code/data/oil_production_filtered.csv"
+      },
+      "transform": [
+        {"filter": "datum.Year == year_equals"},
+        {"filter": "datum['Oil production (TWh)'] > 0"},
+        {
+          "joinaggregate": [
+            {
+              "op": "sum",
+              "field": "Oil production (TWh)",
+              "as": "Total_Production_Year"
+            }
+          ],
+          "groupby": ["Entity"]
+        },
+        {
+          "window": [{"op": "rank", "as": "rank"}],
+          "sort": [{"field": "Total_Production_Year", "order": "descending"}]
+        },
+        {"filter": "datum.rank <= 10"}
+      ],
+      "width": 400,
+      "height": 300,
+      "layer": [
+        {
+          "mark": {
+            "type": "bar",
+            "cornerRadiusEnd": 4
+          },
+          "encoding": {
+            "y": {
+              "field": "Entity",
+              "type": "nominal",
+              "sort": "-x",
+              "title": null,
+              "axis": {
+                "labelFontSize": 11,
+                "labelLimit": 150
+              }
+            },
+            "x": {
+              "field": "Total_Production_Year",
+              "type": "quantitative",
+              "title": "Oil Production (TWh)",
+              "axis": {
+                "titleFontSize": 12,
+                "labelFontSize": 10,
+                "grid": true,
+                "gridOpacity": 0.3
+              }
+            },
+            "color": {
+              "field": "Total_Production_Year",
+              "type": "quantitative",
+              "scale": {
+                "scheme": "oranges",
+                "reverse": false
+              },
+              "legend": null
+            },
+            "tooltip": [
+              {"field": "Entity", "type": "nominal", "title": "Country"},
+              {
+                "field": "Total_Production_Year",
+                "type": "quantitative",
+                "title": "Production (TWh)",
+                "format": ",.1f"
+              },
+              {"field": "rank", "type": "quantitative", "title": "Rank"}
+            ]
+          }
+        },
+        {
+          "mark": {
+            "type": "text",
+            "align": "left",
+            "baseline": "bottom",
+            "dx": -230,
+            "dy": -20,
+            "fontSize": 14,
+            "color": "#000000"
+          },
+          "encoding": {
+            "x": {"value": 400},
+            "y": {"value": 300},
+            "text": {"value": ["The lighter the colour,", "the less prominent the producer"]}
+          }
+        }
+      ]
+    },
+    {
+      "title": {
+        "text": "Top 10 Oil Consumers",
+        "fontSize": 16,
+        "fontWeight": "bold",
+        "anchor": "middle"
+      },
+      "data": {
+        "url": "https://raw.githubusercontent.com/Martin-G123/3179/refs/heads/main/Code/data/oil_consumption_filtered.csv"
+      },
+      "transform": [
+        {"filter": "datum.Year == year_equals"},
+        {"filter": "datum['Oil consumption - TWh'] > 0"},
+        {
+          "joinaggregate": [
+            {
+              "op": "sum",
+              "field": "Oil consumption - TWh",
+              "as": "Total_Consumption_Year"
+            }
+          ],
+          "groupby": ["Entity"]
+        },
+        {
+          "window": [{"op": "rank", "as": "rank"}],
+          "sort": [{"field": "Total_Consumption_Year", "order": "descending"}]
+        },
+        {"filter": "datum.rank <= 10"}
+      ],
+      "width": 400,
+      "height": 300,
+      "layer": [
+        {
+          "mark": {
+            "type": "bar",
+            "cornerRadiusEnd": 4
+          },
+          "encoding": {
+            "y": {
+              "field": "Entity",
+              "type": "nominal",
+              "sort": "-x",
+              "title": null,
+              "axis": {
+                "labelFontSize": 11,
+                "labelLimit": 150
+              }
+            },
+            "x": {
+              "field": "Total_Consumption_Year",
+              "type": "quantitative",
+              "title": "Oil Consumption (TWh)",
+              "axis": {
+                "titleFontSize": 12,
+                "labelFontSize": 10,
+                "grid": true,
+                "gridOpacity": 0.3
+              }
+            },
+            "color": {
+              "field": "Total_Consumption_Year",
+              "type": "quantitative",
+              "scale": {
+                "scheme": "browns",
+                "reverse": false
+              },
+              "legend": null
+            },
+            "tooltip": [
+              {"field": "Entity", "type": "nominal", "title": "Country"},
+              {
+                "field": "Total_Consumption_Year",
+                "type": "quantitative",
+                "title": "Consumption (TWh)",
+                "format": ",.1f"
+              },
+              {"field": "rank", "type": "quantitative", "title": "Rank"}
+            ]
+          }
+        },
+        {
+          "mark": {
+            "type": "text",
+            "align": "left",
+            "baseline": "bottom",
+            "dx": -230,
+            "dy": -20,
+            "fontSize": 14,
+            "color": "#000000"
+          },
+          "encoding": {
+            "x": {"value": 400},
+            "y": {"value": 300},
+            "text": {"value": ["The darker the colour,", "the more prominent the consumer"]}
+          }
+        }
+      ]
+    }
+  ],
+  "config": {
+    "view": {"stroke": null},
+    "axis": {
+      "domainColor": "#ddd",
+      "tickColor": "#ddd"
+    }
+  }
+}

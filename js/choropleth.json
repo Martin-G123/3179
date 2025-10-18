@@ -1,35 +1,300 @@
 {
-  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-  "title": "Oil Production (TWh) by Country",
-  "width": 800,
-  "height": 400,
-  "projection": {"type": "equalEarth"},
-  "data": {
-    "url": "https://raw.githubusercontent.com/Martin-G123/3179/refs/heads/main/Code/data/ne_110m.json",
-    "format": {"type": "topojson", "feature": "ne_110m_admin_0_countries"}
-  },
-  "transform": [
+  "$schema": "https://vega.github.io/schema/vega/v5.json",
+  "width": 1000,
+  "height": 500,
+  "autosize": "pad",
+  
+  "signals": [
     {
-      "lookup": "properties.NAME",
-      "from": {
-        "data": {
-          "url": "https://raw.githubusercontent.com/Martin-G123/3179/refs/heads/main/Code/data/oil_production_filtered.csv"
-        },
-        "key": "Entity",
-        "fields": ["Oil production (TWh)"]
+      "name": "year_equals",
+      "value": 2000,
+      "bind": {
+        "input": "range",
+        "min": 1900,
+        "max": 2024,
+        "step": 1,
+        "name": "Select Year:"
       }
     }
   ],
-  "mark": {"type": "geoshape", "stroke": "white"},
-  "encoding": {
-    "color": {
-      "field": "Oil production (TWh)",
-      "type": "quantitative",
-      "scale": {"type": "log", "domainMin": 0.1} 
+  
+  "data": [
+    {
+      "name": "world",
+      "url": "https://raw.githubusercontent.com/Martin-G123/3179/refs/heads/main/Code/data/ne_110m.json",
+      "format": {"type": "topojson", "feature": "ne_110m_admin_0_countries"}
     },
-    "tooltip": [
-      {"field": "properties.NAME", "type": "nominal", "title": "Country"},
-      {"field": "Oil production (TWh)", "type": "quantitative", "format": ".2f", "title": "Oil Production (TWh)"}
-    ]
+    {
+      "name": "oceans",
+      "url": "https://raw.githubusercontent.com/Martin-G123/3179/refs/heads/main/Code/data/oceans.json",
+      "format": {"type": "topojson", "feature": "oceans"}
+    },
+    {
+      "name": "graticules",
+      "url": "https://raw.githubusercontent.com/Martin-G123/3179/refs/heads/main/Code/data/graticules.json",
+      "format": {"type": "topojson", "feature": "ne_110m_graticules_30"}
+    },
+    {
+      "name": "oil_data_raw",
+      "url": "https://raw.githubusercontent.com/Martin-G123/3179/refs/heads/main/Code/data/oil_production_filtered.csv",
+      "format": {"type": "csv", "parse": "auto"}
+    },
+    {
+      "name": "oil_data_filtered",
+      "source": "oil_data_raw",
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "datum.Year == year_equals"
+        }
+      ]
+    },
+    {
+      "name": "countries_with_oil",
+      "source": "world",
+      "transform": [
+        {
+          "type": "lookup",
+          "from": "oil_data_filtered",
+          "key": "Entity",
+          "fields": ["properties.NAME"],
+          "values": ["Oil production (TWh)"],
+          "as": ["oil_production"]
+        }
+      ]
+    },
+    {
+      "name": "country_info",
+      "url": "https://raw.githubusercontent.com/Martin-G123/3179/refs/heads/main/Code/data/countryInfo.csv",
+      "format": {"type": "csv", "parse": "auto"}
+    },
+    {
+      "name": "country_labels",
+      "source": "world",
+      "transform": [
+        {
+          "type": "lookup",
+          "from": "country_info",
+          "key": "name",
+          "fields": ["properties.NAME"],
+          "values": ["latitude", "longitude"]
+        },
+        {
+          "type": "filter",
+          "expr": "datum.latitude != null && datum.longitude != null"
+        },
+        {
+          "type": "filter",
+          "expr": "datum['properties.NAME'] == 'China' || datum['properties.NAME'] == 'Venezuela' || datum['properties.NAME'] == 'Australia' || datum['properties.NAME'] == 'Russia' || datum['properties.NAME'] == 'United Arab Emirates' || datum['properties.NAME'] == 'United States of America'"
+        }
+      ]
+    },
+    {
+      "name": "annotations",
+      "values": [
+        {
+          "country": "United States of America",
+          "latitude": 37.0902,
+          "longitude": -95.7129,
+          "note": "United States of America",
+          "dx": 60,
+          "dy": -40
+        },
+        {
+          "country": "Saudi Arabia",
+          "latitude": 23.8859,
+          "longitude": 45.0792,
+          "note": "Saudi Arabia",
+          "dx": 50,
+          "dy": 30
+        },
+        {
+          "country": "Russia",
+          "latitude": 61.5240,
+          "longitude": 105.3188,
+          "note": "Russia",
+          "dx": 0,
+          "dy": -30
+        }
+      ]
+    }
+  ],
+  
+  "projections": [
+    {
+      "name": "projection",
+      "type": "equirectangular",
+      "scale": 160,
+      "translate": [{"signal": "width / 2"}, {"signal": "height / 2"}]
+    }
+  ],
+  
+  "scales": [
+    {
+      "name": "color",
+      "type": "linear",
+      "domain": {"data": "countries_with_oil", "field": "oil_production"},
+      "range": {"scheme": "browns"},
+      "nice": true,
+      "zero": true
+    }
+  ],
+  
+  "legends": [
+    {
+      "fill": "color",
+      "title": "Oil production (TWh)",
+      "orient": "right",
+      "type": "gradient",
+      "format": ".1f",
+      "gradientLength": 300,
+      "offset": 10
+    }
+  ],
+  
+  "marks": [
+    {
+      "type": "shape",
+      "from": {"data": "oceans"},
+      "encode": {
+        "enter": {
+          "fill": {"value": "skyblue"}
+        }
+      },
+      "transform": [
+        {"type": "geoshape", "projection": "projection"}
+      ]
+    },
+    {
+      "type": "shape",
+      "from": {"data": "graticules"},
+      "encode": {
+        "enter": {
+          "fill": {"value": null},
+          "stroke": {"value": "lightgray"},
+          "strokeWidth": {"value": 1}
+        }
+      },
+      "transform": [
+        {"type": "geoshape", "projection": "projection"}
+      ]
+    },
+    {
+      "type": "shape",
+      "from": {"data": "world"},
+      "encode": {
+        "enter": {
+          "fill": {"value": "lightgray"},
+          "stroke": {"value": "white"},
+          "strokeWidth": {"value": 0.5},
+          "tooltip": {
+            "signal": "{'Country': datum.properties.NAME, 'Note': 'Data is not available in ' + datum.properties.NAME}"
+          }
+        }
+      },
+      "transform": [
+        {"type": "geoshape", "projection": "projection"}
+      ]
+    },
+    {
+      "type": "shape",
+      "from": {"data": "countries_with_oil"},
+      "encode": {
+        "enter": {
+          "stroke": {"value": "white"},
+          "strokeWidth": {"value": 0.5}
+        },
+        "update": {
+          "fill": [
+            {
+              "test": "datum.oil_production != null",
+              "scale": "color",
+              "field": "oil_production"
+            },
+            {"value": null}
+          ],
+          "tooltip": {
+            "signal": "datum.oil_production != null ? {'Country': datum.properties.NAME, 'Oil Production (TWh)': format(datum.oil_production, '.2f')} : null"
+          }
+        }
+      },
+      "transform": [
+        {"type": "geoshape", "projection": "projection"}
+      ]
+    },
+    {
+      "type": "text",
+      "from": {"data": "country_labels"},
+      "encode": {
+        "enter": {
+          "text": {"field": "properties.NAME"},
+          "fontSize": {"value": 10},
+          "align": {"value": "center"},
+          "baseline": {"value": "middle"},
+          "fill": {"value": "black"},
+          "fontWeight": {"value": "bold"}
+        },
+        "update": {
+          "x": {"signal": "scale('projection', [datum.longitude, datum.latitude])[0]"},
+          "y": {"signal": "scale('projection', [datum.longitude, datum.latitude])[1]"}
+        }
+      }
+    },
+    {
+      "type": "rule",
+      "from": {"data": "annotations"},
+      "encode": {
+        "enter": {
+          "stroke": {"value": "#d62728"},
+          "strokeWidth": {"value": 2}
+        },
+        "update": {
+          "x": {"signal": "scale('projection', [datum.longitude, datum.latitude])[0]"},
+          "y": {"signal": "scale('projection', [datum.longitude, datum.latitude])[1]"},
+          "x2": {"signal": "scale('projection', [datum.longitude, datum.latitude])[0] + datum.dx"},
+          "y2": {"signal": "scale('projection', [datum.longitude, datum.latitude])[1] + datum.dy"}
+        }
+      }
+    },
+    {
+      "type": "symbol",
+      "from": {"data": "annotations"},
+      "encode": {
+        "enter": {
+          "fill": {"value": "#d62728"},
+          "size": {"value": 50},
+          "shape": {"value": "circle"}
+        },
+        "update": {
+          "x": {"signal": "scale('projection', [datum.longitude, datum.latitude])[0]"},
+          "y": {"signal": "scale('projection', [datum.longitude, datum.latitude])[1]"}
+        }
+      }
+    },
+    {
+      "type": "text",
+      "from": {"data": "annotations"},
+      "encode": {
+        "enter": {
+          "text": {"field": "note"},
+          "fontSize": {"value": 11},
+          "fontWeight": {"value": "bold"},
+          "fill": {"value": "black"},
+          "align": {"value": "left"},
+          "baseline": {"value": "middle"}
+        },
+        "update": {
+          "x": {"signal": "scale('projection', [datum.longitude, datum.latitude])[0] + datum.dx + 5"},
+          "y": {"signal": "scale('projection', [datum.longitude, datum.latitude])[1] + datum.dy"}
+        }
+      }
+    }
+  ],
+  
+  "title": {
+    "text": "Global Oil Production by Country",
+    "anchor": "start",
+    "fontSize": 16,
+    "fontWeight": "bold"
   }
 }
